@@ -9,7 +9,10 @@ class Home extends CI_Controller
     {
         parent::__construct();
         $this->load->model('m_home');
+        $this->load->model('m_bahan');
+        $this->load->model('m_kategori');
         $this->load->model('m_rating');
+        $this->load->model('m_barang');
 
         $this->load->helper('url');
 
@@ -26,10 +29,40 @@ class Home extends CI_Controller
         $data = array(
             'tittle' => 'Home',
             'barang' => $this->m_home->get_all_data(),
+            'filter_kategori' => $this->m_kategori->get_all_data(),
+            'filter_bahan' => $this->m_bahan->get_all_data(),
             'isi'   => 'v_home'
 
         );
         $this->load->view('layout/v_wrapper_frontend', $data, FALSE);
+    }
+    public function filter()
+    {
+        $id_kategori    = strlen($_GET['kategori']) > 0 ? $_GET['kategori'] : null;
+        $id_bahan       = strlen($_GET['bahan']) > 0 ? $_GET['bahan'] : null;
+        $min            = strlen($_GET['min']) > 0 ? $_GET['min'] : null;
+        $max            = strlen($_GET['max']) > 0 ? $_GET['max'] : null;
+        $data = array(
+            'tittle' => 'Fiter',
+            'barang' => $this->m_home->get_filter($id_kategori,$id_bahan,$min,$max),
+            'filter_kategori' => $this->m_kategori->get_all_data(),
+            'filter_bahan' => $this->m_bahan->get_all_data(),
+            'isi'   => 'v_filter'
+
+        );
+        $this->load->view('layout/v_wrapper_frontend', $data, FALSE);
+    }
+    public function comment($id_barang)
+    {
+         $data = array(
+            'id_barang' => $id_barang,
+            'user'      => $this->input->post('user'),
+            'rating'    => $this->input->post('rating'),
+            'comment'   => $this->input->post('comment')
+        );
+        $this->m_rating->add($data);
+        $this->session->set_flashdata('pesan', 'Data Berhasil Ditambahkan !');
+        redirect('home/detail_brg/'.$id_barang, 'refresh');
     }
 
     public function kategori($id_kategori)
@@ -62,14 +95,10 @@ class Home extends CI_Controller
             'tittle' => 'Detail Barang',
             'gambar' => $this->m_home->gambar_brg($id_barang),
             'barang' => $this->m_home->detail_brg($id_barang),
+            'rating' => $this->m_rating->viewRating($id_barang),
             'isi'   => 'v_detail'
 
         );
-        // Userid
-        $userid = $this->session->userdata('id_pelanggan');
-
-        // Fetch all records
-        $data['posts'] = $this->m_rating->getAllPosts($userid);
         $this->load->view('layout/v_wrapper_frontend', $data, FALSE);
     }
 

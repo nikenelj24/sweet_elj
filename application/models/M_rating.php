@@ -7,6 +7,20 @@ class M_rating extends CI_Model
     {
         parent::__construct();
     }
+    public function add($data)
+    {
+        $this->db->insert('tb_rating', $data);
+    }
+    public function getRating($id_barang){
+        return $this->db->select('avg(rating) as rating')->from('tb_rating')->where("id_barang",$id_barang)->get()->row()->rating;
+    }
+    public function getAllUsers(){
+        return $this->db->query('SELECT DISTINCT user from tb_rating ORDER BY user asc')->result();
+    }
+    public function getCoordinates($user,$id_barang){
+        return @$this->db->select('rating')->from('tb_rating')->where("id_barang",$id_barang)->where("user",$user)->get()->row()->rating;
+    }
+
 
     // Fetch records
     public function getAllPosts($id_pelanggan)
@@ -70,7 +84,13 @@ class M_rating extends CI_Model
 
         return $posts_arr;
     }
-
+    public function viewRating($id_barang)
+    {
+        $this->db->select('*');
+        $this->db->from('tb_rating');
+        $this->db->where("id_barang", $id_barang);
+        return $this->db->get()->result();
+    }
     // Save user rating
     public function userRating($id_pelanggan, $id_barang, $rating)
     {

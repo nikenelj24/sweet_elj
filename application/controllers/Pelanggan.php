@@ -57,6 +57,7 @@ class Pelanggan extends CI_Controller
                 'nama_pelanggan' => $this->input->post('nama_pelanggan'),
                 'email' => $this->input->post('email'),
                 'password' => $this->input->post('password'),
+                'level_user' => 2,
             );
             $this->m_pelanggan->register($data);
             $this->session->set_flashdata('pesan', 'Anda Berhasil Registrasi, Silahkan Login !');
