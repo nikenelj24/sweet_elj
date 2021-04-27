@@ -150,26 +150,37 @@ INSERT INTO `tb_pelanggan` (`id_pelanggan`, `nama_pelanggan`, `email`, `password
 
 -- --------------------------------------------------------
 
---
--- Table structure for table `tb_rating`
---
 
 CREATE TABLE `tb_rating` (
   `id_rating` int(11) NOT NULL,
-  `id_pelanggan` int(11) NOT NULL,
+  `user` varchar(50) NOT NULL,
   `id_barang` int(11) NOT NULL,
-  `rating` int(2) NOT NULL
+  `rating` int(2) NOT NULL,
+  `comment` text NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `tb_rating`
 --
 
-INSERT INTO `tb_rating` (`id_rating`, `id_pelanggan`, `id_barang`, `rating`) VALUES
-(1, 1, 1, 3),
-(2, 1, 2, 3);
+INSERT INTO `tb_rating` (`id_rating`, `user`, `id_barang`, `rating`, `comment`, `created_at`) VALUES
+(3, 'Jamal', 4, 4, 'Bagus', '2021-04-27 05:03:53'),
+(4, 'Andi Arsyil', 6, 5, 'Lettau', '2021-04-27 05:33:25'),
+(5, 'Joel Liminata', 7, 4, 'Bagus', '2021-04-27 06:13:03'),
+(6, 'Juanietto', 7, 5, 'Keren', '2021-04-27 06:13:19'),
+(7, 'Joel Liminata', 4, 5, 'Keren', '2021-04-27 07:28:19'),
+(8, 'Joel Liminata', 5, 1, 'Jelek', '2021-04-27 08:26:13');
 
--- --------------------------------------------------------
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `tb_rating`
+--
+ALTER TABLE `tb_rating`
+  ADD PRIMARY KEY (`id_rating`);
 
 --
 -- Table structure for table `tb_rekening`
@@ -381,11 +392,6 @@ ALTER TABLE `tb_pelanggan`
   ADD PRIMARY KEY (`id_pelanggan`);
 
 --
--- Indexes for table `tb_rating`
---
-ALTER TABLE `tb_rating`
-  ADD PRIMARY KEY (`id_rating`);
-
 --
 -- Indexes for table `tb_rekening`
 --
