@@ -15,8 +15,8 @@
 
                     if ($this->session->flashdata('pesan')) {
                         echo '<div class="alert alert-success alert-dismissible">
-                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                    <h5><i class="icon fas fa-check"></i>Sukses</h5>';
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                        <h5><i class="icon fas fa-check"></i>Sukses</h5>';
                         echo $this->session->flashdata('pesan');
                         echo '</div>';
                     }
@@ -24,16 +24,12 @@
 
                     if ($this->session->flashdata('error')) {
                         echo '<div class="alert alert-danger alert-dismissible">
-                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                    <h5></h5>';
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                        <h5></h5>';
                         echo $this->session->flashdata('error');
                         echo '</div>';
                     }
-
-
-
                     echo form_open('pelanggan/login'); ?>
-
                     <?php echo form_error('email', '<div class="text-danger small ml-2">', '</div>') ?>
                     <div class="input-group mb-3">
                         <input type="email" name="email" value="<?= set_value('email') ?>" class="form-control" placeholder="Email">

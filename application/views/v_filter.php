@@ -44,7 +44,7 @@
                     $product_shown=array();
                     foreach ($barang as $key => $value) {
                         $product_shown[]=$value->id_barang;
-                     ?>
+                        ?>
                         <div class="col-sm-6 col-xs-12">
                             <?php
                             echo form_open('belanja/add');
@@ -83,7 +83,7 @@
                                                         }
                                                         if ($s < 5) {
                                                             for ($i = 1; $i <= 5 - $s; $i++) {
-                                                            echo '<span class="fa fa-star text-secondary"></span>';   
+                                                                echo '<span class="fa fa-star text-secondary"></span>';   
                                                             }
                                                         }
                                                     }else{
@@ -110,57 +110,138 @@
                         </div>
                     <?php } ?>
                 </div>
-            </div>
+            </div>]\
         </div>
+        <?php 
+        error_reporting(0);
+        ?>
         <div class="card  mt-2 mb-2">
             <div class="card-header" id="headingOne">
                 <h5 class="mb-0">
-                        Collaborative Filtering
+                    Collaborative Filtering
                 </h5>
             </div>
             <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
                 <div class="card-body">
-                    <table class="table table-striped table-hover">
-                        <thead>
-                            <th>Nama\Rating</th>
-                            <?php foreach ($product_shown as $ps => $item): ?>
-                                <th class="text-center"><?php echo $this->m_barang->get_data($item)->nama_barang;?></th>
-                            <?php endforeach ?>
-                        </thead>
-                        <tbody>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <th>Nama\Rating</th>
+                                <?php foreach ($product_shown as $ps => $item): ?>
+                                    <th class="text-center"><?php echo $this->m_barang->get_data($item)->nama_barang;?></th>
+                                <?php endforeach ?>
+                                <th>Rerata</th>
+                            </thead>
+                            <tbody>
                                 <?php $person = $this->m_rating->getAllUsers();
                                 foreach ($person as $cust): ?>
-                                <tr>
-                                    <td><?php echo ucwords($cust->user) ?></td>
-                                    <?php foreach ($product_shown as $item): ?>
-                                        <td class="text-center"><?php echo $this->m_rating->getCoordinates($cust->user,$item); ?></td>
-                                <?php endforeach; ?>
-                                </tr>
+                                    <tr>
+                                        <th><?php echo ucwords($cust->user) ?></th>
+                                        <?php foreach ($product_shown as $item): ?>
+                                            <td class="text-center"><?php echo $this->m_rating->getCoordinates($cust->user,$item); ?></td>
+                                            <?php 
+                                            $rate=$this->m_rating->getCoordinates($cust->user,$item);
+                                            if ($rate!==null) {
+                                                $user_avg[$cust->user][$item]=$rate;
+                                                $item_avg[$item][$cust->user]=$rate;
+                                            }
+                                            ?>
+                                        <?php endforeach ?>
+                                        <th>
+                                            <?php $rerata_user[$cust->user]=round(array_sum($user_avg[$cust->user])/count($user_avg[$cust->user]),2); echo $rerata_user[$cust->user]; ?>
+                                        </th>
+                                    </tr>
+                                <?php endforeach ?>
+                            </tbody>
+                            <tfoot>
+                                <th class="bg-dark">Total</th>
+                                <?php 
+                                foreach ($product_shown as $item):
+                                    $count_item_avg = count($item_avg[$item]) === null ? 0 : count($item_avg[$item]);
+                                    $sum_item_avg   = array_sum($item_avg[$item]) === null ? 0 : array_sum($item_avg[$item]);
+                                    ?>
+                                    <th class="text-center">
+                                        <?php $rerata_item[$item] = round($sum_item_avg/$count_item_avg,2); echo $rerata_item[$item] ?>
+                                    </th>
+                                <?php endforeach ?>
+                                <th></th>
+                            </tfoot>
+                        </table>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="text-center">
+                            <img src="<?php echo base_url('assets/foto/Collaborative filtering.png') ?>" style="max-width: 300px">
+                        </div>
+                        <ul class="list-unstyled">
+                            <?php foreach ($product_shown as $itema): ?>
+                                <?php foreach ($product_shown as $itemb):
+                                    if ($itema!==$itemb){ 
+                                        $string['full']="";
+                                        ?>
+                                        <li>
+                                            <small>
+                                                <i>sim(<b><?php echo $this->m_barang->get_data($itema)->nama_barang;?></b>,<b><?php echo $this->m_barang->get_data($itemb)->nama_barang;?></b>)</i> = 
+                                            </small>
+                                            <?php 
+                                            $person = $this->m_rating->getAllUsers();
+                                            $string['top']="";
+                                            $string['bottom']="";
+                                            $plus=0;
+                                            foreach ($person as $cust):
+                                                $topFirst     = $user_avg[$cust->user][$itema]==null ? 0 : $user_avg[$cust->user][$itema];//itemA  
+                                                $topLast     = $user_avg[$cust->user][$itemb]==null ? 0 : $user_avg[$cust->user][$itemb];//$itemB
+                                                $topAvg     = $rerata_user[$cust->user]==null ? 0 : $rerata_user[$cust->user];//rerata
+                                                $top[] = ($topFirst-$topAvg)*($topLast-$topAvg);
+                                                $string['top'] .= $plus > 0 ? " + ":"";
+                                                $string['top'] .=  " (".$topFirst."-".$topAvg.")(".$topLast."-".$topAvg.")";
+                                                $plus++;
+                                            endforeach;
+                                            $string['bottom_f'] = "√";
+                                            $string['bottom_l'] = "√";
+                                            $plus_f=0;
+                                            $plus_l=0;
+
+                                            foreach ($person as $cust):
+
+                                                if (isset($user_avg[$cust->user][$itema])) {
+                                                    $div['bottom_f'][] = pow(($user_avg[$cust->user][$itema]-$rerata_item[$itema]),2);
+                                                    $string['bottom_f'] .= $plus_f > 0 ? " + ":"";
+                                                    $string['bottom_f'] .= "(".$user_avg[$cust->user][$itema]."-".$rerata_item[$itema].")<sup>2</sup>";
+                                                    $plus_f++;
+                                                }
+                                                if (isset($user_avg[$cust->user][$itemb])) {
+                                                    $div['bottom_l'][] = pow(($user_avg[$cust->user][$itemb]-$rerata_item[$itemb]),2);
+                                                    $string['bottom_l'] .= $plus_l > 0 ? " + ":"";
+                                                    $string['bottom_l'] .= "(".$user_avg[$cust->user][$itemb]."-".$rerata_item[$itemb].")<sup>2</sup>";
+                                                    $plus_l++;
+                                                }
+                                            endforeach;
+                                            $bottom     = sqrt(array_sum($div['bottom_f'])) * sqrt(array_sum($div['bottom_l']));
+                                            $string['bottom'] = $string['bottom_f']."  ".$string['bottom_l'];
+                                            ?>
+                                            <table>
+                                                <tr>
+                                                    <td>
+                                                        <span class='text-center' style='border-bottom:1px solid black'><?php echo $string['top'] ?></span><br><span class='text-center'><?php echo $string['bottom'] ?></span>
+                                                    </td>
+                                                    <td>&nbsp;=&nbsp;</td>
+                                                    <td>
+                                                        <span class='text-center' style='border-bottom:1px solid black'><?php echo round(array_sum($top),2) ?></span><br><span class='text-center'><?php echo round(sqrt(array_sum($div['bottom_f'])*array_sum($div['bottom_l'])),2) ?></span>
+                                                    </td>
+                                                    <td>&nbsp;=&nbsp;</td>
+                                                    <td><?php echo round(array_sum($top)/$bottom,2) ?></td>
+                                                </tr>
+                                            </table>
+                                        </li>
+                                        <?php 
+                                        unset($top);unset($div);unset($bottom);  
+                                    }
+                                endforeach ?>
                             <?php endforeach ?>
-                        </tbody>
-                    </table>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
-<!-- SweetAlert2 -->
-<script src="<?= base_url(); ?>template/plugins/sweetalert2/sweetalert2.min.js"></script>
-<!-- Page specific script -->
-<script>
-    $(function() {
-        var Toast = Swal.mixin({
-            toast: true,
-            position: 'top-end',
-            showConfirmButton: false,
-            timer: 3000
-        });
-        $('.swalDefaultSuccess').click(function() {
-            Toast.fire({
-                icon: 'success',
-                title: 'Tas Berhasil Ditambahkan ke Keranjang !'
-            })
-        });
-    });
-</script>
