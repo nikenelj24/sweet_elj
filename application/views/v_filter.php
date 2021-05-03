@@ -1,11 +1,10 @@
 <?php 
 error_reporting(0);
-
+$best_item = array();
 $product_shown=array();
 foreach ($barang as $key => $value) {
     $product_shown[]=$value->id_barang;
 }
-$best_item = array();
 $person = $this->m_rating->getAllUsers();
 foreach ($person as $cust):
     foreach ($product_shown as $item): 
@@ -25,52 +24,42 @@ endforeach;
 foreach ($product_shown as $itema):
     foreach ($product_shown as $itemb):
         if ($itema!==$itemb){ 
-            $string['full']="";
             $person = $this->m_rating->getAllUsers();
-            $string['top']="";
-            $string['bottom']="";
             $plus=0;
             foreach ($person as $cust):
                 $topFirst     = $user_avg[$cust->user][$itema]==null ? 0 : $user_avg[$cust->user][$itema];
                 $topLast     = $user_avg[$cust->user][$itemb]==null ? 0 : $user_avg[$cust->user][$itemb];
                 $topAvg     = $rerata_user[$cust->user]==null ? 0 : $rerata_user[$cust->user];
                 $top[] = ($topFirst-$topAvg)*($topLast-$topAvg);
-                $string['top'] .= $plus > 0 ? " + ":"";
-                $string['top'] .=  " (".$topFirst."-".$topAvg.")(".$topLast."-".$topAvg.")";
                 $plus++;
             endforeach;
-            $string['bottom_f'] = "√";
-            $string['bottom_l'] = "√";
             $plus_f=0;
             $plus_l=0;
             foreach ($person as $cust):
                 if (isset($user_avg[$cust->user][$itema])) {
                     $div['bottom_f'][] = pow(($user_avg[$cust->user][$itema]-$rerata_item[$itema]),2);
-                    $string['bottom_f'] .= $plus_f > 0 ? " + ":"";
-                    $string['bottom_f'] .= "(".$user_avg[$cust->user][$itema]."-".$rerata_item[$itema].")<sup>2</sup>";
                     $plus_f++;
                 }
                 if (isset($user_avg[$cust->user][$itemb])) {
                     $div['bottom_l'][] = pow(($user_avg[$cust->user][$itemb]-$rerata_item[$itemb]),2);
-                    $string['bottom_l'] .= $plus_l > 0 ? " + ":"";
-                    $string['bottom_l'] .= "(".$user_avg[$cust->user][$itemb]."-".$rerata_item[$itemb].")<sup>2</sup>";
                     $plus_l++;
                 }
             endforeach;
             $bottom     = sqrt(array_sum($div['bottom_f'])) * sqrt(array_sum($div['bottom_l']));
-            $string['bottom'] = $string['bottom_f']."  ".$string['bottom_l'];
-            if (array_sum($top)/$bottom >= $best) {
+            if ($bottom > 0 && array_sum($top)/$bottom >= $best) {
                 if (array_sum($top)/$bottom !== $best) {
-
                     unset($best_item);
+                    unset($best);
                 }
                 $best_item[] = $itema;
                 $best_item[] = $itemb;
+                $best = array_sum($top)/$bottom;
             } 
             unset($top);unset($div);unset($bottom);unset($string); 
         }
     endforeach;
 endforeach;
+// print_r($best_item);exit;
 ?>
 <div class="col-lg-12 p-0 row">
     <div class="col-lg-3 col-xs-12 ">
@@ -191,7 +180,7 @@ endforeach;
                     }
 
                     foreach ($barang as $key => $value) {
-                       if (!in_array($value->id_barang, $best_item)){
+                     if (!in_array($value->id_barang, $best_item)){
 
                         $product_shown[]=$value->id_barang;
                         ?>
