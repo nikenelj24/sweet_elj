@@ -6,7 +6,15 @@
         <div class="card-body">
             <?php echo form_open('laporan/lap_harian') ?>
             <div class="row">
-                <div class="col-sm-4">
+
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <label>Tanggal</label>
+                        <input type="date" name="tanggal" class="form-control" value="<?php echo date('Y-m-d') ?>">
+                    </div>
+                </div>
+
+               <!--  <div class="col-sm-4">
                     <div class="form-group">
                         <label>Tanggal</label>
                         <select name="tanggal" class="form-control">
@@ -44,7 +52,7 @@
                             ?>
                         </select>
                     </div>
-                </div>
+                </div> -->
 
                 <div class="col-sm-12">
                     <div class="form-group">
@@ -69,7 +77,13 @@
         <div class="card-body">
             <?php echo form_open('laporan/lap_bulanan') ?>
             <div class="row">
-                <div class="col-sm-6">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <label>Bulan</label>
+                        <input type="month" name="bulan" class="form-control" value="<?php echo date('Y-m') ?>">
+                    </div>
+                </div>
+                <!-- <div class="col-sm-6">
                     <div class="form-group">
                         <label>Bulan</label>
                         <select name="bulan" class="form-control">
@@ -95,7 +109,7 @@
                             ?>
                         </select>
                     </div>
-                </div>
+                </div> -->
 
                 <div class="col-sm-12">
                     <div class="form-group">
@@ -124,14 +138,7 @@
                 <div class="col-sm-12">
                     <div class="form-group">
                         <label>Tahun</label>
-                        <select name="tahun" class="form-control">
-                            <?php
-                            $mulai = date('Y') - 1;
-                            for ($i = $mulai; $i < $mulai + 7; $i++) {
-                                echo '<option value="' . $i . '">' . $i . '</option>';
-                            }
-                            ?>
-                        </select>
+                        <input type="number" name="tahun" class="form-control" value="<?php echo date('Y') ?>">
                     </div>
                 </div>
 

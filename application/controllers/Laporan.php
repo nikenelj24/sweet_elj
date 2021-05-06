@@ -24,10 +24,11 @@ class Laporan extends CI_Controller
     }
 
     public function lap_harian()
-    {
-        $tanggal = $this->input->post('tanggal');
-        $bulan = $this->input->post('bulan');
-        $tahun = $this->input->post('tahun');
+    {   
+        $input      = $this->input->post('tanggal');
+        $tanggal    = date_format(date_create($input),'d');
+        $bulan      = date_format(date_create($input),'m');
+        $tahun      = date_format(date_create($input),'Y');
 
         $data = array(
             'tittle'    => 'Laporan Penjualan Harian',
@@ -43,8 +44,10 @@ class Laporan extends CI_Controller
 
     public function lap_bulanan()
     {
-        $bulan = $this->input->post('bulan');
-        $tahun = $this->input->post('tahun');
+
+        $input      = $this->input->post('bulan');
+        $bulan      = date_format(date_create($input),'m');
+        $tahun      = date_format(date_create($input),'Y');
 
         $data = array(
             'tittle'    => 'Laporan Penjualan Bulanan',
@@ -59,7 +62,9 @@ class Laporan extends CI_Controller
 
     public function lap_tahunan()
     {
-        $tahun = $this->input->post('tahun');
+
+        $input      = $this->input->post('tahun');
+        $tahun      = date_format(date_create($input),'Y');
 
         $data = array(
             'tittle'    => 'Laporan Penjualan Tahunan',

@@ -55,7 +55,7 @@ foreach ($product_shown as $itema):
                 $best_item[] = $itemb;
                 $best = array_sum($top)/$bottom;
             } 
-            unset($top);unset($div);unset($bottom);unset($string); 
+            unset($top);unset($div);unset($bottom);unset($string);
         }
     endforeach;
 endforeach;
@@ -180,8 +180,81 @@ endforeach;
                     }
 
                     foreach ($barang as $key => $value) {
-                     if (!in_array($value->id_barang, $best_item)){
+                     if (!in_array($value->id_barang, $best_item) && $this->m_rating->getRating($value->id_barang) !== null){
 
+                        $product_shown[]=$value->id_barang;
+                        ?>
+                        <div class="col-sm-6 col-xs-12">
+                            <?php
+                            echo form_open('belanja/add');
+                            echo form_hidden('id', $value->id_barang);
+                            echo form_hidden('qty', 1);
+                            echo form_hidden('price', $value->harga);
+                            echo form_hidden('name', $value->nama_barang);
+                            echo form_hidden('redirect_page', str_replace('index.php/', '', current_url()));
+                            ?>
+                            <div class="card bg-light">
+                                <div class="col-12 text-center">
+                                    <img src="<?= base_url('assets/uploads/' . $value->gambar) ?>" width="300px" height="250px" class="text-center">
+                                </div>
+                                <div class="card-header text-muted border-bottom-0">
+                                    <?php if (in_array($value->id_barang, $best_item)): ?>
+                                        <span class="float-right badge badge-danger">Recommended</span>
+                                    <?php endif ?>
+                                    <h2 class="lead"><b><?= $value->nama_barang; ?></b></h2>
+                                </div>
+                                <div class="card-body pt-0">
+                                    <div class="row">
+                                        <div class="col-7">
+                                            <p class="text-muted text-sm"><b>Kategori : </b> <?= $value->nama_kategori; ?> </p>
+                                            <ul class="ml-4 mb-0 fa-ul text-muted">
+                                                <li class="medium"><span class="fa-li "><i class="fas fa-wallet"></i></span><span class="badge bg-success bg-m">Rp. <?= number_format($value->harga, 0); ?></span></li>
+                                                <li class="medium"><span class="fa-li"><i class="fas fa-layer-group"></i></span><?= $value->nama_bahan; ?></li>
+                                                <li>
+                                                    <?php 
+                                                    $star = round($this->m_rating->getRating($value->id_barang),1);
+                                                    if ($star>0) {
+                                                        $s=0;
+                                                        for ($i = 1; $i <= $star; $i++) {
+                                                            echo '<span class="fa fa-star text-warning"></span>';
+                                                            $s++;
+                                                        }
+                                                        if (($star*2)%2==1) {
+                                                            echo '<span class="fa fa-star-half-o text-warning"></span>';   
+                                                            $s++;
+                                                        }
+                                                        if ($s < 5) {
+                                                            for ($i = 1; $i <= 5 - $s; $i++) {
+                                                                echo '<span class="fa fa-star text-secondary"></span>';   
+                                                            }
+                                                        }
+                                                    }else{
+                                                        echo 'Not rated yet';
+                                                    }
+                                                    ?>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    <div class="text-right">
+                                        <a href="<?= base_url('home/detail_brg/' . $value->id_barang); ?>" class="btn btn-sm bg-teal">
+                                            <i class="fa fa-eye"></i>
+                                        </a>
+                                        <button type="submit" class="btn btn-sm btn-primary swalDefaultSuccess">
+                                            <i class="fa fa-cart-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <?php echo form_close(); ?>
+                        </div>
+                        <?php 
+                    }
+                }
+                foreach ($barang as $key => $value) {
+                     if (!in_array($value->id_barang, $best_item) && $this->m_rating->getRating($value->id_barang) == null){
                         $product_shown[]=$value->id_barang;
                         ?>
                         <div class="col-sm-6 col-xs-12">
@@ -363,14 +436,25 @@ endforeach;
                                             <table>
                                                 <tr>
                                                     <td>
-                                                        <span class='text-center' style='border-bottom:1px solid black'><?php echo $string['top'] ?></span><br><span class='text-center'><?php echo $string['bottom'] ?></span>
+                                                        <small>
+
+                                                            <span class='text-center' style='border-bottom:1px solid black'><?php echo $string['top'] ?></span><br><span class='text-center'><?php echo $string['bottom'] ?></span>
+                                                        </small>
                                                     </td>
                                                     <td>&nbsp;=&nbsp;</td>
                                                     <td>
-                                                        <span class='text-center' style='border-bottom:1px solid black'><?php echo round(array_sum($top),2) ?></span><br><span class='text-center'><?php echo round(sqrt(array_sum($div['bottom_f'])*array_sum($div['bottom_l'])),2) ?></span>
+                                                        <small>
+                                                            
+                                                            <span class='text-center' style='border-bottom:1px solid black'><?php echo round(array_sum($top),2) ?></span><br><span class='text-center'><?php echo round(sqrt(array_sum($div['bottom_f'])*array_sum($div['bottom_l'])),2) ?></span>
+                                                        </small>
                                                     </td>
                                                     <td>&nbsp;=&nbsp;</td>
                                                     <td><?php echo round(array_sum($top)/$bottom,2) ?></td>
+                                                    <td>
+                                                        <?php if (array_sum($top)/$bottom == $best): ?>
+                                                            <small class="badge badge-danger">Recommended</small>
+                                                        <?php endif ?>
+                                                    </td>
                                                 </tr>
                                             </table>
                                         </li>

@@ -59,7 +59,7 @@
 
             <div class="form-group">
                 <label>Deskripsi</label>
-                <textarea name="deskripsi" class="form-control" rows="5" placeholder="Deskripsi Barang"><?= $barang->deskripsi ?></textarea>
+                <textarea id="deskripsi" name="deskripsi" class="form-control" rows="5" placeholder="Deskripsi Barang"><?= $barang->deskripsi ?></textarea>
                 <?php echo form_error('deskripsi', '<div class="text-danger small ml-2">', '</div>') ?>
             </div>
 
@@ -111,4 +111,8 @@
     $('#preview_gambar').change(function() {
         bacaGambar(this);
     })
+</script>
+<script src="//cdn.ckeditor.com/4.14.1/standard/ckeditor.js"></script>
+<script type="text/javascript">
+    CKEDITOR.replace('deskripsi');
 </script>
