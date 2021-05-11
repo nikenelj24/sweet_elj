@@ -36,9 +36,9 @@ foreach ($product_shown as $itema):
             $plus_f=0;
             $plus_l=0;
             foreach ($person as $cust):
-                $div['bottom_f'][] = pow(($user_avg[$cust->user][$itema]-$rerata_item[$itema]),2);
+                $div['bottom_f'][] = pow(($user_avg[$cust->user][$itema]-$rerata_user[$cust->user]),2);
                 $plus_f++;
-                $div['bottom_l'][] = pow(($user_avg[$cust->user][$itemb]-$rerata_item[$itemb]),2);
+                $div['bottom_l'][] = pow(($user_avg[$cust->user][$itemb]-$rerata_user[$cust->user]),2);
                 $plus_l++;
             endforeach;
             $bottom     = sqrt(array_sum($div['bottom_f'])) * sqrt(array_sum($div['bottom_l']));
@@ -411,13 +411,13 @@ endforeach;
                                     foreach ($person as $cust):
                                         $avg_a = $user_avg[$cust->user][$itema];
                                         $avg_b = $user_avg[$cust->user][$itemb];
-                                        $div['bottom_f'][] = pow(($avg_a-$rerata_item[$itema]),2);
+                                        $div['bottom_f'][] = pow(($avg_a-$rerata_user[$cust->user]),2);
                                         $string['bottom_f'] .= $plus_f > 0 ? " + ":"";
-                                        $string['bottom_f'] .= "(".$avg_a."-".$rerata_item[$itema].")<sup>2</sup>";
+                                        $string['bottom_f'] .= "(".$avg_a."-".$rerata_user[$cust->user].")<sup>2</sup>";
                                         $plus_f++;
-                                        $div['bottom_l'][] = pow(($avg_b-$rerata_item[$itemb]),2);
+                                        $div['bottom_l'][] = pow(($avg_b-$rerata_user[$cust->user]),2);
                                         $string['bottom_l'] .= $plus_l > 0 ? " + ":"";
-                                        $string['bottom_l'] .= "(".$avg_b."-".$rerata_item[$itemb].")<sup>2</sup>";
+                                        $string['bottom_l'] .= "(".$avg_b."-".$rerata_user[$cust->user].")<sup>2</sup>";
                                         $plus_l++;
                                     endforeach;
                                     $bottom     = sqrt(array_sum($div['bottom_f'])) * sqrt(array_sum($div['bottom_l']));
